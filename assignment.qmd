@@ -117,7 +117,7 @@ data %>%
   filter(office_name == "Governor / Lt. Governor") %>% 
   group_by(county_name, election_district_precinct) %>%
   summarise(total_votes = sum(total_votes)) %>%
-  arrange(total_votes)
+  arrange(-total_votes)
 
 
 
@@ -131,6 +131,7 @@ Let's look at the average number of votes in each party's primary race for gover
 
 ```{r}
 
+#I'm not sure how to make a variable out of a group_by from the original one, so I ended up counting it. 
 
 data %>%
   filter(office_name == "Governor / Lt. Governor") %>% 
@@ -154,9 +155,14 @@ First write the question and then try to answer it by writing code. If you're no
 
 ```{r}
 
-#how does the 
+#how do election night vs. early/mail voting percents for governor compare for federal elections? 
 
+#I'm not quite sure how to make them all one variable on the group_by but here are all the percents 
 
+data %>%
+  filter(office_name == c("U.S. Congress", "U.S. Senator")) %>% 
+  group_by(county_name) %>%
+  summarise(pct_early_voting = ((election_night_votes)/total_votes))
 
 
 
