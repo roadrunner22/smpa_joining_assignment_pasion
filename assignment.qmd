@@ -43,8 +43,7 @@ Now Combine (stack) the two dataframes into one combined dataframe, so all the r
 
 ```{r}
 
-
-
+primary_votes_combine <- bind_rows(list(primary_dem, primary_rep))
 
 
 
@@ -60,7 +59,8 @@ To use clean_names() you apply it to your dataframe like:
 
 ```{r}
 
-
+primary_votes_combine <- primary_votes_combine %>%
+  clean_names()
 
 
 
@@ -80,9 +80,11 @@ Next use left_join() to join the two tables based on the unique combination of p
 
 ```{r}
 
+precinct_voting_locations <- precinct_voting_locations %>%
+  mutate(congressional_district_code = as.character(congressional_district_code)) 
 
 
-
+data <- left_join(primary_votes_combine, precinct_voting_locations, by = c("county" = "county_code", "election_district_precinct" = "precinct_code"))
 
 
 ```
@@ -96,6 +98,10 @@ Write code to produce a `votes` column which is the result of adding together `e
 ```{r}
 
 
+data <- data %>%
+  mutate(total_votes = early_votes + election_night_votes + provisional_votes + mail_in_ballot_1_votes + mail_in_ballot_2_votes)
+
+
 
 ```
 
@@ -103,13 +109,21 @@ Next, separately write code to show each county and precinct and calculate the t
 
 ```{r}
 
+data <- data %>%
+  mutate(across(election_district_precinct, as.character))
 
+
+data %>%
+  filter(office_name == "Governor / Lt. Governor") %>% 
+  group_by(county_name, election_district_precinct) %>%
+  summarise(total_votes = sum(total_votes)) %>%
+  arrange(total_votes)
 
 
 
 ```
 
-What is the name and voting location of the precinct that saw the most votes in the governor's race? *Put answer here*
+What is the name and voting location of the precinct that saw the most votes in the governor's race? *Carroll County*
 
 ### Q2.
 
@@ -118,15 +132,19 @@ Let's look at the average number of votes in each party's primary race for gover
 ```{r}
 
 
-
+data %>%
+  filter(office_name == "Governor / Lt. Governor") %>% 
+  group_by(county_name, election_district_precinct) %>%
+  summarise(total_votes = sum(total_votes)) %>%
+  arrange(total_votes)
 
 
 
 ```
 
-How many precincts are there, and which county has the most? *Put answer here*
+How many precincts are there, and which county has the most? *Four precincts and Prince George's County has the most with five*
 
-What else would you need to know about these precincts to know whether this might be worth a story? *Put answer here*
+What else would you need to know about these precincts to know whether this might be worth a story? *We'll need to know why there are no votes for governor. were there no voting centers? were people uninterested in voting? and depending on the answers to these overall - why - we'll know if there is a story*
 
 ### Q3.
 
@@ -135,6 +153,8 @@ Choose your own adventure: I want you to come up with a question you could ask o
 First write the question and then try to answer it by writing code. If you're not sure of the exact code at a minimum, describe what you think you'd have to do to answer it and what the results would look like.
 
 ```{r}
+
+#how does the 
 
 
 
